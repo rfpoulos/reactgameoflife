@@ -81,10 +81,12 @@ class Board extends React.Component {
     }
     render() {
         return (
-        <div className="container" onClick={this.handleClick.bind(this)}>
-            {this.state.seed.map(row =>
-                <div className="row">{row.map(column =>
-                    <div className={column}></div>
+        <div key="board" className="container" onClick={this.handleClick.bind(this)}>
+            {this.state.seed.map((row, rowIndex) =>
+                <div key={rowIndex.toString()} className="row">
+                    {row.map((column, columnIndex) =>
+                        <div key={columnIndex.toString()} className={column}>
+                        </div>
                 )}</div>
             )}
         </div>);
