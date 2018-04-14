@@ -26,3 +26,7 @@ html, body, .react-root {
     flex-grow: 1;
     /* margin: .01em; */
 }
+
+.hide {
+    display: none;
+}
