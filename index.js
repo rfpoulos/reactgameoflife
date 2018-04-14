@@ -74,14 +74,13 @@ class Board extends React.Component {
             seed: props.seed
         }
     };
-    handleClick() {
-        this.setState({
-            seed: nextFrame(this.state.seed)
-        })
-    }
     render() {
+        let { seed } = this.state;
+        let onClick = () => {
+            this.setState({ seed: nextFrame(seed) });
+        };
         return (
-        <div key="board" className="container" onClick={this.handleClick.bind(this)}>
+        <div key="board" className="container" onClick={onClick}>
             {this.state.seed.map((row, rowIndex) =>
                 <div key={rowIndex.toString()} className="row">
                     {row.map((column, columnIndex) =>
