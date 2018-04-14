@@ -11,7 +11,7 @@ submitButton.addEventListener('click', (event) => {
     let rowsInput = form["rows"];
     let columns = parseInt(columnsInput.value);
     let rows = parseInt(rowsInput.value);
-    form.style="display:none";
+    form.setAttribute("class", "hide");
     let startBoard = generateBoard(rows, columns);
     ReactDOM.render(h(Board, {seed: startBoard}, []), reactRoot);
 });
@@ -36,6 +36,15 @@ let generateBoard = (rows, columns) => {
     return board;
 }
 
+let nextFrame = seed =>
+    seed.map((row, indexRow) =>
+        row.map((column, indexColumn) => 
+            checkNeighbors(seed, indexRow, indexColumn))
+    );
+
+let checkNeighbors = (seed, row, column) => 
+    "dead";
+
 class Board extends React.Component {
     constructor(props) {
         super(props);
@@ -43,9 +52,14 @@ class Board extends React.Component {
             seed: props.seed
         }
     };
+    handleClick() {
+        this.setState({
+            seed: nextFrame(this.state.seed)
+        })
+    }
     render() {
         return (
-        <div className="container">
+        <div className="container" onClick={this.handleClick.bind(this)}>
             {this.state.seed.map(row =>
                 <div className="row">{row.map(column =>
                     <div className={column}></div>
