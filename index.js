@@ -42,12 +42,15 @@ let nextFrame = seed =>
             checkNeighbors(seed, indexRow, indexColumn))
     );
 
+
 let checkNeighbors = (seed, myRow, myColumn) => {
     let myself = seed[myRow][myColumn];
     let aliveCount = 0;
-    for (let currentRow = Math.max(0, myRow - 1); currentRow < Math.min(seed.length, myRow + 2); currentRow++) {
-        for (let currentColumn = Math.max(0, myColumn - 1); currentColumn < Math.min(seed[0].length, myColumn + 2); currentColumn++) {
-            if (seed[currentRow][currentColumn] === 'alive'){
+    for (let currentRow = myRow - 1; currentRow < myRow + 2; currentRow++) {
+        for (let currentColumn = myColumn - 1; currentColumn < myColumn + 2; currentColumn++) {
+            let rowCoor = checkWrap(currentRow, seed.length);
+            let columnCoor = checkWrap(currentColumn, seed[0].length);
+            if (seed[rowCoor][columnCoor] === 'alive'){
                 aliveCount++;
             };
         };
@@ -57,6 +60,16 @@ let checkNeighbors = (seed, myRow, myColumn) => {
     }
     return checkIsAlive(myself, aliveCount);
 };
+
+let checkWrap = (location, length) => {
+    if (location === -1) {
+        return length - 1;
+    } else if (location === length) {
+        return 0;
+    } else {
+        return location;
+    }
+}
 
 let checkIsAlive = (myself, aliveCount) => {
     if ((myself === 'alive' && aliveCount === (2 || 3)) 
