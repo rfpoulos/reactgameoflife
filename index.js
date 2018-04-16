@@ -1,8 +1,6 @@
-let submitButton = document.querySelector('button');
-let reactRoot = document.querySelector('.react-root');
-let h = React.createElement
-
-
+const submitButton = document.querySelector('button');
+const reactRoot = document.querySelector('.react-root');
+const h = React.createElement
 
 submitButton.addEventListener('click', (event) => {
     event.preventDefault();
@@ -13,7 +11,7 @@ submitButton.addEventListener('click', (event) => {
     let rows = parseInt(rowsInput.value);
     form.setAttribute("class", "hide");
     let startBoard = generateBoard(rows, columns);
-    ReactDOM.render(h(Board, {seed: startBoard}, []), reactRoot);
+    ReactDOM.render(h(Game, {seed: startBoard}, []), reactRoot);
 });
 
 let randomAliveOrDead = () => {
@@ -36,28 +34,24 @@ let generateBoard = (rows, columns) => {
     return board;
 }
 
-let nextFrame = seed =>
+let nextArray = seed =>
     seed.map((row, indexRow) =>
         row.map((column, indexColumn) => 
             checkNeighbors(seed, indexRow, indexColumn))
     );
 
-
-let checkNeighbors = (seed, myRow, myColumn) => {
-    let myself = seed[myRow][myColumn];
+let checkNeighbors = (seed, row, col) => {
+    let myself = seed[row][col];
     let aliveCount = 0;
-    for (let currentRow = myRow - 1; currentRow < myRow + 2; currentRow++) {
-        for (let currentColumn = myColumn - 1; currentColumn < myColumn + 2; currentColumn++) {
-            let rowCoor = checkWrap(currentRow, seed.length);
-            let columnCoor = checkWrap(currentColumn, seed[0].length);
-            if (seed[rowCoor][columnCoor] === 'alive'){
-                aliveCount++;
+    for (let currentRow = row - 1; currentRow < row + 2; currentRow++) {
+        for (let currentColumn = col - 1; currentColumn < col + 2;  currentColumn++) {
+                let rowCoor = checkWrap(currentRow, seed.length);
+                let colCoor = checkWrap(currentColumn, seed[0].length);
+                if (seed[rowCoor][colCoor] === 'alive'){
+                    aliveCount++;
             };
         };
     };
-    if (myself === 'alive') {
-        aliveCount -= 1;
-    }
     return checkIsAlive(myself, aliveCount);
 };
 
@@ -72,7 +66,9 @@ let checkWrap = (location, length) => {
 }
 
 let checkIsAlive = (myself, aliveCount) => {
-    if ((myself === 'alive' && aliveCount === (2 || 3)) 
+    //if myself is alive, the check neighbors funciton
+    //adds an extra alive count.  Rule changed to 3 or 4.
+    if ((myself === 'alive' && aliveCount === (3 || 4)) 
         || (myself === 'dead' && aliveCount === 3)) {
             return 'alive';
     } else {
@@ -80,27 +76,36 @@ let checkIsAlive = (myself, aliveCount) => {
     }
 }
 
-class Board extends React.Component {
+class Game extends React.Component {
     constructor(props) {
         super(props);
         this.state = { 
             seed: props.seed
         }
     };
+
     render() {
-        let { seed } = this.state;
         let onClick = () => {
-            this.setState({ seed: nextFrame(seed) });
+            this.setState({ seed: nextArray(this.state.seed) });
         };
-        return (
-        <div key="board" className="container" onClick={onClick}>
-            {this.state.seed.map((row, rowIndex) =>
-                <div key={rowIndex.toString()} className="row">
-                    {row.map((column, columnIndex) =>
-                        <div key={columnIndex.toString()} className={column}>
-                        </div>
-                )}</div>
-            )}
-        </div>);
+        return <Board seed={this.state.seed} nextFrame={onClick}/>;
     }
 }
+
+let Board = ({seed, nextFrame}) =>
+    <div key="board" className="container" onClick={nextFrame}>
+            {seed.map((row, rowIndex) =>
+                <Row row={row} key={rowIndex}/>
+            )}
+    </div>;
+
+let Row = ({row}) =>
+    <div className="row">
+        {row.map((column, columnIndex) =>
+            <Cell column={column} key={columnIndex} />
+    )}</div>;
+
+let Cell = ({column}) =>
+    <div className={column}>
+    </div>;
+    
